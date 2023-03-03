@@ -1,11 +1,13 @@
 import { useEffect, useReducer } from "react";
 import axios from "axios";
 import { homeReducer } from "../helper/reducer";
-import { Product, LoadingBox, MessageBox } from "../helper/index";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
+import {Product} from '../helper/index'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 import { Helmet } from "react-helmet-async";
+import favicon from "../../public/amazona.png";
 function HomeScreen() {
+  ;
   const [{ loading, error, products }, dispatch] = useReducer(homeReducer, {
     products: [],
     loading: true,
@@ -15,7 +17,7 @@ function HomeScreen() {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
       try {
-        const result = await axios.get("/api/products");
+        const result = await axios.get("http://localhost:8000/api/products");
         dispatch({ type: "FETCH_SUCCESS", payload: result.data });
       } catch (error) {
         dispatch({ type: "FETCH_FAIL", payload: error });
@@ -27,13 +29,14 @@ function HomeScreen() {
     <div>
       <Helmet>
         <title>Amazona</title>
+        <link rel="icon" type="image/x-icon" href={favicon} />
       </Helmet>
       <h1>Featured Products</h1>
       <div className="products">
         {loading ? (
-          <LoadingBox />
+          <div>Loading...</div>
         ) : error ? (
-          <MessageBox variant="danger">{error}</MessageBox>
+          <div>{error}</div>
         ) : (
           <Row>
             {products.map((product) => (
