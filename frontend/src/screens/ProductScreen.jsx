@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -7,11 +7,13 @@ import Badge from "react-bootstrap/Badge";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import { Helmet } from "react-helmet-async";
+
 import Rating from "../components/Rating";
 import axios from "axios";
 import { productReducer } from "../helper/reducer";
-import {MessageBox,LoadingBox} from '../helper/index'
-import { getError } from '../util';
+import { MessageBox, LoadingBox } from "../helper/index";
+import { getError } from "../helper/util";
+import { Store } from "../Store";
 function ProductScreen() {
   const params = useParams();
   const { slug } = params;
@@ -24,9 +26,7 @@ function ProductScreen() {
     const fetchData = async () => {
       dispatch({ type: "FETCH_REQUEST" });
       try {
-        const result = await axios.get(
-          `/api/products/product/${slug}`
-        );
+        const result = await axios.get(`/api/products/product/${slug}`);
         dispatch({ type: "FETCH_SUCCESS", payload: result.data });
       } catch (error) {
         dispatch({ type: "FETCH_FAIL", payload: getError(error) });
@@ -34,6 +34,24 @@ function ProductScreen() {
     };
     fetchData();
   }, [slug]);
+
+
+
+  const {state,dispatch: ctxDispatch } = useContext(Store);
+  const {cart} = state
+  const addToCartHandler = async() => {
+    const existItem = cart.cartItems.find((pro) => pro._id === product._id)
+    const quantity = existItem ? existItem.quantity + 1 : 1
+    const {data} = await axios.get(`/api/products/${product._id}`)
+    
+    if(data.countInStock < quantity){
+      window.alert('Sorry Product is out of Stock!')
+    }
+    ctxDispatch({
+      type: "CART_ADD_ITEM",
+      payload: { ...product, quantity},
+    });
+  };
   return (
     <div>
       {loading ? (
@@ -102,8 +120,10 @@ function ProductScreen() {
                   </ListGroup.Item>
                   {product.countInStock && (
                     <ListGroup.Item>
-                      <div className="d-flex">
-                        <Button variant="primary">Add to cart</Button>
+                      <div className="d-grid">
+                        <Button onClick={addToCartHandler} variant="primary">
+                          Add to Cart
+                        </Button>
                       </div>
                     </ListGroup.Item>
                   )}

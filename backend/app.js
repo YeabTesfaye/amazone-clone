@@ -20,6 +20,15 @@ app.get("/api/products/product/:slug", (req, res) => {
     return res.status(404).json({msg : "Product Not Found"})
   }
 });
+app.get("/api/products/:id", (req, res) => {
+  const { id } = req.params;
+  const product = data.products.find((pro) => pro._id === id);
+  if (product) {
+    return res.status(200).json(product);
+  } else {
+    return res.status(404).json({ msg: "Product Not Found" });
+  }
+});
 
 
 
