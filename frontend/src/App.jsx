@@ -7,6 +7,8 @@ import {
   ShippingAddressScreen,
   SignupScreen,
   PaymentMEthodScreen,
+  PlaceOrderScreen,
+  OrderScreen,
 } from "./helper/index";
 import axios from "axios";
 import Navbar from "react-bootstrap/Navbar";
@@ -85,6 +87,8 @@ function App() {
               <Route path="/signin" element={<SignInScreen />} />
               <Route path="/signup" element={<SignupScreen />} />
               <Route path="/payment" element={<PaymentMEthodScreen />} />
+              <Route path="placeorder" element={<PlaceOrderScreen />} />
+              <Route path="order/:id" element={<OrderScreen />} />
               <Route path="/product/:slug" element={<ProductScreen />} />
             </Routes>
           </Container>
