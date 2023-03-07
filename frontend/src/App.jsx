@@ -11,6 +11,8 @@ import {
   OrderScreen,
   OrderHistoryScreen,
   ProfileScreen,
+  SearchBox,
+  SearchScreen
 } from "./helper/index";
 import axios from "axios";
 import Navbar from "react-bootstrap/Navbar";
@@ -18,11 +20,13 @@ import Nav from "react-bootstrap/Nav";
 import { LinkContainer } from "react-router-bootstrap";
 import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { useContext } from "react";
+import { useContext, useState,useEffect } from "react";
 import { Store } from "./Store";
 import Badge from "react-bootstrap/Badge";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer,toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Button from "react-bootstrap/Button";
+
 axios.defaults.baseURL = "http://localhost:8000";
 
 function App() {
@@ -36,18 +40,46 @@ function App() {
     localStorage.removeItem("paymentMethod");
     window.location.href = '/sign'
   };
+
+    const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+      const fetchCategories = async () => {
+        try {
+          const { data } = await axios.get(`/api/products/categories`);
+          setCategories(data);
+        } catch (err) {
+          toast.error(getError(err));
+        }
+      };
+      fetchCategories();
+    }, []);
   return (
     <BrowserRouter>
-      <div className="d-flex flex-column site-container">
+      <div
+        className={
+          sidebarIsOpen
+            ? "d-flex flex-column site-container active-cont"
+            : "d-flex flex-column site-container"
+        }
+      >
         <ToastContainer position="bottom-center" limit={1} />
         <header>
           <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
+              <Button
+                variant="dark"
+                onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
+              >
+                <i className="fas fa-bars"></i>
+              </Button>
               <LinkContainer to="/">
                 <Navbar.Brand>Amazona</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
+                <SearchBox />
                 <Nav className="me-auto w-100 justify-content-end">
                   <Link to="/cart" className="nav-link">
                     Cart
@@ -84,6 +116,29 @@ function App() {
             </Container>
           </Navbar>
         </header>
+        <div
+          className={
+            sidebarIsOpen
+              ? "active-nav side-navbar d-flex justify-content-between flex-wrap flex-column"
+              : "side-navbar d-flex justify-content-between flex-wrap flex-column"
+          }
+        >
+          <Nav className="flex-column text-white w-100 p-2">
+            <Nav.Item>
+              <strong>Categories</strong>
+            </Nav.Item>
+            {categories.map((category) => (
+              <Nav.Item key={category}>
+                <LinkContainer
+                  to={{ pathname: "/search", search: `?category=${category}` }}
+                  onClick={() => setSidebarIsOpen(false)}
+                >
+                  <Nav.Link>{category}</Nav.Link>
+                </LinkContainer>
+              </Nav.Item>
+            ))}
+          </Nav>
+        </div>
         <main>
           <Container className="mt-3">
             <Routes>
@@ -95,7 +150,8 @@ function App() {
               <Route path="/payment" element={<PaymentMEthodScreen />} />
               <Route path="placeorder" element={<PlaceOrderScreen />} />
               <Route path="orderhistory" element={<OrderHistoryScreen />} />
-              <Route path="profile" element={<ProfileScreen />}  />
+              <Route path="profile" element={<ProfileScreen />} />
+              {/* <Route path="search" element={<SearchScreen />} /> */}
               <Route path="order/:id" element={<OrderScreen />} />
               <Route path="/product/:slug" element={<ProductScreen />} />
             </Routes>

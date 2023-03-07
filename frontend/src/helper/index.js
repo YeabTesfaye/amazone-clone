@@ -13,3 +13,6 @@ export {default as PlaceOrderScreen} from '../screens/PlaceOrderScreen'
 export {default as OrderScreen} from '../screens/OrderScreen'
 export {default as OrderHistoryScreen} from '../screens/OrderHistoryScreen'
 export { default as ProfileScreen } from "../screens/ProfileScreen";
+export { default as SearchBox } from "../components/SearchBox";
+export { default as SearchScreen } from "../screens/SearchScreen";
+export { default as Rating } from "../components/Rating";
