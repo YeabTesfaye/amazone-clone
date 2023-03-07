@@ -11,3 +11,5 @@ export {default as SignupScreen} from '../screens/SignUpScreen'
 export {default as PaymentMEthodScreen} from '../screens/PaymentMethodScreen'
 export {default as PlaceOrderScreen} from '../screens/PlaceOrderScreen'
 export {default as OrderScreen} from '../screens/OrderScreen'
+export {default as OrderHistoryScreen} from '../screens/OrderHistoryScreen'
+export { default as ProfileScreen } from "../screens/ProfileScreen";
